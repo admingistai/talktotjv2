@@ -5,7 +5,7 @@ export default function Home() {
   const [input, setInput] = useState('');
 
   type Message = {
-    role: 'user' | 'TJ';
+    role: 'user' | 'assistant';
     content: string;
   };
 
