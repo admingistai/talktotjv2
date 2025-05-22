@@ -3,7 +3,14 @@ import { useState, useRef, useEffect } from 'react';
 
 export default function Home() {
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<any[]>([]);
+
+  type Message = {
+    role: 'user' | 'TJ';
+    content: string;
+  };
+
+
+  const [messages, setMessages] = useState<Message[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null); // ⬅️ this creates the scroll anchor
 
   useEffect(() => {
