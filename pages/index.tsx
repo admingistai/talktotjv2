@@ -8,9 +8,8 @@ export default function Home() {
     role: 'user' | 'assistant';
     content: string;
   };
-
-
   const [messages, setMessages] = useState<Message[]>([]);
+
   const bottomRef = useRef<HTMLDivElement>(null); // ⬅️ this creates the scroll anchor
 
   useEffect(() => {
@@ -19,7 +18,10 @@ export default function Home() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const newMessages = [...messages, { role: 'user', content: input }];
+    const newMessages = [
+      ...messages,
+      { role: 'user' as const, content: input }
+    ];
     setMessages(newMessages);
     setInput('');
 
@@ -30,7 +32,12 @@ export default function Home() {
     });
 
     const data = await res.json();
-    setMessages([...newMessages, data.choices[0].message]);
+    const assistantReply: Message = {
+      role: 'assistant',
+      content: data.choices[0].message.content,
+    };
+
+    setMessages([...newMessages, assistantReply]);
   }
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center px-4 py-6">
