@@ -22,24 +22,50 @@ export default async function handler(req, res) {
     `,
       };
 
-    try {
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-3.5-turbo', // or 'gpt-3.5-turbo'
-          messages: [systemMessage, ...messages],
-        }),
-      });
-  
-      const data = await response.json();
-      res.status(200).json(data);
-    } catch (error) {
+      
+
+      try {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'gpt-3.5-turbo',
+            messages: [systemMessage, ...messages],
+          }),
+        });
+      
+        const data = await response.json();
+        const replyText = data.choices[0].message.content;
+      
+        // Call ElevenLabs to get the voice
+        const elevenRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${process.env.ELEVENLABS_VOICE_ID}`, {
+          method: 'POST',
+          headers: {
+            'xi-api-key': process.env.ELEVENLABS_API_KEY,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            text: replyText,
+            voice_settings: {
+              stability: 0.3,
+              similarity_boost: 0.85,
+            },
+          }),
+        });
+      
+        const audioBuffer = await elevenRes.arrayBuffer();
+        const audioBase64 = Buffer.from(audioBuffer).toString('base64');
+      
+        res.status(200).json({
+          content: replyText,
+          audio: audioBase64,
+        });
+      } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Failed to fetch from OpenAI' });
-    }
+        res.status(500).json({ error: 'Failed to fetch from OpenAI or ElevenLabs' });
+      }
   }
 
