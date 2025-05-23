@@ -39,6 +39,7 @@ export default async function handler(req, res) {
       
         const data = await response.json();
         const replyText = data.choices[0].message.content;
+        console.log("💬 OpenAI Response:", replyText);
       
         // Call ElevenLabs to get the voice
         const elevenRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${process.env.ELEVENLABS_VOICE_ID}`, {
@@ -65,6 +66,7 @@ export default async function handler(req, res) {
         const audioBuffer = await elevenRes.arrayBuffer();
         const audioBase64 = Buffer.from(audioBuffer).toString('base64');
       
+        console.log("🔊 Sending audio to client");
         res.status(200).json({
           content: replyText,
           audio: audioBase64,
