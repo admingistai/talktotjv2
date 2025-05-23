@@ -56,6 +56,12 @@ export default async function handler(req, res) {
           }),
         });
       
+        if (!elevenRes.ok) {
+            const errorText = await elevenRes.text();
+            console.error("❌ ElevenLabs error:", errorText);
+            return res.status(500).json({ error: 'Failed to fetch ElevenLabs audio', detail: errorText });
+        }
+          
         const audioBuffer = await elevenRes.arrayBuffer();
         const audioBase64 = Buffer.from(audioBuffer).toString('base64');
       
