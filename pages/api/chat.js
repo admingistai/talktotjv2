@@ -1,6 +1,10 @@
 // pages/api/chat.js
 
 export default async function handler(req, res) {
+    console.log("🔐 OPENAI_API_KEY:", process.env.OPENAI_API_KEY ? 'Loaded' : 'Missing');
+    console.log("🔐 ELEVENLABS_API_KEY:", process.env.ELEVENLABS_API_KEY ? 'Loaded' : 'Missing');
+    console.log("🔐 ELEVENLABS_VOICE_ID:", process.env.ELEVENLABS_VOICE_ID ? 'Loaded' : 'Missing');
+
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Only POST allowed' });
     }
