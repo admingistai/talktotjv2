@@ -32,12 +32,22 @@ export default function Home() {
     });
 
     const data = await res.json();
+
     const assistantReply: Message = {
       role: 'assistant',
-      content: data.choices[0].message.content,
+      content: data.content,
     };
 
     setMessages([...newMessages, assistantReply]);
+
+    // 🔊 Auto-play TJ's voice
+    console.log("🎧 Audio data received:", data.audio?.slice(0, 100)); // show just first 100 chars
+    if (data.audio) {
+      const audio = new Audio(`data:audio/mpeg;base64,${data.audio}`);
+      audio.play().catch(err => console.error("🚫 Audio playback error:", err));
+    } else {
+      console.warn("⚠️ No audio data returned from API");
+    }
   }
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center px-4 py-6">
